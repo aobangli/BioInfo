@@ -37,6 +37,8 @@ vignettes/*.pdf
 
 # R Environment Variables
 .Renviron
+
+
 *.gz
 *.gtf
 *.csv
@@ -46,3 +48,5 @@ vignettes/*.pdf
 *.Rdata
 *.Rproj
 *.soft
+*.json
+*.bak

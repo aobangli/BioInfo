@@ -217,6 +217,7 @@ load(file = './LIHC_lipid_limma_DEG.Rdata')
 load(file = './clinical.Rdata')
 
 survexprdata = training_set
+#survexprdata = LIHC_PT_COUNT_expr
 
 colnames(survexprdata)= substr(colnames(survexprdata),1,12)
 

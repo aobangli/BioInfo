@@ -4,6 +4,11 @@ clinical= read.csv("./clinical_change.csv")
 rownames(clinical) = clinical[,1]
 clinical = clinical[ , -1]
 
+#删除MX, NX, TX的样本
+clinical = clinical[clinical$pM != 'MX', ]
+clinical = clinical[clinical$pN != 'NX', ]
+clinical = clinical[clinical$pT != 'TX', ]
+
 ########## 计算 ##########
 
 load("./survexprdata_lipid.Rdata")
@@ -24,10 +29,6 @@ for(i in 1:nrow(geneCoef)) {
 
 
 clinicalexpr$Risk = ifelse(clinicalexpr$Riskscore < median(clinicalexpr$Riskscore),'Low','High')
-# clinicalexpr$ppT = ifelse(is.numeric(substring(clinicalexpr$pT,2,2)), as.numeric(substring(clinicalexpr$pT,2,2)), 0)
-# clinicalexpr$ppM = ifelse(is.numeric(substring(clinicalexpr$pM,2,2)), as.numeric(substring(clinicalexpr$pM,2,2)), 0)
-# clinicalexpr$ppN = ifelse(is.numeric(substring(clinicalexpr$pN,2,2)), as.numeric(substring(clinicalexpr$pN,2,2)), 0)
-
 clinicalexpr$ppT = as.numeric(substring(clinicalexpr$pT,2,2))
 clinicalexpr$ppM = as.numeric(substring(clinicalexpr$pM,2,2))
 clinicalexpr$ppN = as.numeric(substring(clinicalexpr$pN,2,2))
@@ -37,14 +38,14 @@ clinicalexpr$ppN = as.numeric(substring(clinicalexpr$pN,2,2))
 library(timeROC)
 library(survival)
 
-
+ROC_TIME = 365
 
 ROC_rt_score <<- timeROC(T=clinicalexpr$OS.time,
                          delta=clinicalexpr$OS,   #时间 结局
                          marker=clinicalexpr$Riskscore,
                          cause=1,
                          weighting='marginal',
-                         times= 1829,
+                         times= ROC_TIME,
                          ROC=TRUE)
 
 ROC_rt_stage <<- timeROC(T=clinicalexpr$OS.time,
@@ -52,7 +53,7 @@ ROC_rt_stage <<- timeROC(T=clinicalexpr$OS.time,
                          marker=clinicalexpr$stage1,
                          cause=1,
                          weighting='marginal',
-                         times= 1829,
+                         times= ROC_TIME,
                          ROC=TRUE)
 
 ROC_rt_age <<- timeROC(T=clinicalexpr$OS.time,
@@ -60,7 +61,7 @@ ROC_rt_age <<- timeROC(T=clinicalexpr$OS.time,
                        marker=clinicalexpr$age,
                        cause=1,
                        weighting='marginal',
-                       times= 1829,
+                       times= ROC_TIME,
                        ROC=TRUE)
 
 ROC_rt_T <<- timeROC(T=clinicalexpr$OS.time,
@@ -68,7 +69,7 @@ ROC_rt_T <<- timeROC(T=clinicalexpr$OS.time,
                      marker=clinicalexpr$ppT,
                      cause=1,
                      weighting='marginal',
-                     times= 1829,
+                     times= ROC_TIME,
                      ROC=TRUE)
 
 ROC_rt_N <<- timeROC(T=clinicalexpr$OS.time,
@@ -76,7 +77,7 @@ ROC_rt_N <<- timeROC(T=clinicalexpr$OS.time,
                      marker=clinicalexpr$ppN,
                      cause=1,
                      weighting='marginal',
-                     times= 1829,
+                     times= ROC_TIME,
                      ROC=TRUE)
 
 ROC_rt_M <<- timeROC(T=clinicalexpr$OS.time,
@@ -84,21 +85,21 @@ ROC_rt_M <<- timeROC(T=clinicalexpr$OS.time,
                      marker=clinicalexpr$ppM,
                      cause=1,
                      weighting='marginal',
-                     times= 1829,
+                     times= ROC_TIME,
                      ROC=TRUE)
 
 png(file="Fig4D.png",width=1800,height=2000,pointsize = 60)
-plot(ROC_rt_score,time=1829,col= '#FF1717',title=FALSE,lwd=8)+box(lwd=5)
+plot(ROC_rt_score,time=ROC_TIME,col= '#FF1717',title=FALSE,lwd=8)+box(lwd=5)
 par(new=TRUE)
-plot(ROC_rt_stage,time=1829,col='#50FFAF',title=FALSE,lwd=8)
+plot(ROC_rt_stage,time=ROC_TIME,col='#50FFAF',title=FALSE,lwd=8)
 par(new=TRUE)
-plot(ROC_rt_age,time=1829,col='#FFDC16',title=FALSE,lwd=8)
+plot(ROC_rt_age,time=ROC_TIME,col='#FFDC16',title=FALSE,lwd=8)
 par(new=TRUE)
-plot(ROC_rt_T,time=1829,col='#0089FF',title=FALSE,lwd=8)
+plot(ROC_rt_T,time=ROC_TIME,col='#0089FF',title=FALSE,lwd=8)
 par(new=TRUE)
-plot(ROC_rt_N,time=1829,col='#391496',title=FALSE,lwd=8)
+plot(ROC_rt_N,time=ROC_TIME,col='#391496',title=FALSE,lwd=8)
 par(new=TRUE)
-plot(ROC_rt_M,time=1829,col='#FF05D9',title=FALSE,lwd=8)
+plot(ROC_rt_M,time=ROC_TIME,col='#FF05D9',title=FALSE,lwd=8)
 
 legend('bottomright',
        c(paste0('Risk score: ',round(ROC_rt_score$AUC[2],3)),

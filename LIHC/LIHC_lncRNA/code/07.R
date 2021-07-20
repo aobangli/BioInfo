@@ -60,13 +60,14 @@ f = cph(Surv(OS.time,OS) ~ Age +Stage +RiskScore  ,data=nomomatrix,
 
 #画图
 survival = Survival(f)
-survival1 = function(x)survival(1095,x)
-survival2 = function(x)survival(1825,x)
+survival1 = function(x)survival(365,x)
+survival2 = function(x)survival(1095,x)
+survival3 = function(x)survival(1825,x)
 
 
-nom = nomogram(f,fun = list(survival1,survival2),lp=F,
+nom = nomogram(f,fun = list(survival1,survival2,survival3),lp=F,
                fun.at = c(0.1,seq(0.1,0.9,by=0.1),0.95),
-               funlabel = c('3 year survival','5 year survival'))
+               funlabel = c('1 year survival' ,'3 year survival','5 year survival'))
 pdf(file="nomo.pdf",width=45,height=25,pointsize = 60)
 plot(nom, xfrac=.2)
 dev.off()
@@ -81,7 +82,7 @@ rcorrcens(Surv(OS.time,OS) ~ predict(f), data = nomomatrix)
 
 library(timeROC)
 library(survival)
-#### 5year ROC  ####
+#### 1year ROC  ####
 nomoROC =  clinicalexpr[,c('agegroup','gender','pM','pN1','pT','pT1','stage1','Riskscore','OS','OS.time')]
 nomoROC$predict = predict(f)
 nomoROC$OS = as.numeric(nomoROC$OS) - 1  #将event改为0和1
@@ -91,38 +92,44 @@ ROC_rt_stage <<- timeROC(T=nomoROC$OS.time,
                          marker=nomoROC$stage1,
                          cause=1,
                          weighting='marginal',
-                         times= 1760,
+                         times= 365,
                          ROC=TRUE)
 
-
+ROC_rt_score <<- timeROC(T=nomoROC$OS.time,
+                         delta=nomoROC$OS,   #时间 结局
+                         marker=nomoROC$Riskscore,
+                         cause=1,
+                         weighting='marginal',
+                         times= 365,
+                         ROC=TRUE)
 
 ROC_rt_predict <<- timeROC(T=nomoROC$OS.time,
                            delta=nomoROC$OS,   #时间 结局
                            marker=nomoROC$predict,
                            cause=1,
                            weighting='marginal',
-                           times= 1760,
+                           times= 365,
                            ROC=TRUE)
 
 
-png(file="Fig5E1.png",width=1800,height=2000,pointsize = 60)
+png(file="Fig5D1_1year.png",width=1800,height=2000,pointsize = 60)
 
-plot(ROC_rt_stage,time=1760,col='black',title=FALSE,lwd=8)+box(lwd=6)
+plot(ROC_rt_stage,time=365,col='black',title=FALSE,lwd=8)+box(lwd=6)
+par(new=TRUE)
+plot(ROC_rt_score,time=365,col='blue',title=FALSE,lwd=8)+box(lwd=6)
 par(new=TRUE)
 
-plot(ROC_rt_predict,time=1760,col='red',title=FALSE,lwd=8)
+plot(ROC_rt_predict,time=365,col='red',title=FALSE,lwd=8)
 
 
 legend('bottomright',
        c(paste0('stage: ',round(ROC_rt_stage$AUC[2],2)),
-         
+         paste0('score: ',round(ROC_rt_score$AUC[2],2)),
          paste0('nomogram: ',round(ROC_rt_predict$AUC[2],2))
        ),
-       col=c('black','red'),lwd=8,bty = 'n')
+       col=c('black','blue','red'),lwd=8,bty = 'n')
 
 dev.off()
-
-
 
 
 #### 3year ROC  ####
@@ -135,7 +142,7 @@ ROC_rt_stage <<- timeROC(T=nomoROC$OS.time,
                          marker=nomoROC$stage1,
                          cause=1,
                          weighting='marginal',
-                         times= 1000,
+                         times= 1095,
                          ROC=TRUE)
 
 ROC_rt_score <<- timeROC(T=nomoROC$OS.time,
@@ -143,7 +150,7 @@ ROC_rt_score <<- timeROC(T=nomoROC$OS.time,
                          marker=nomoROC$Riskscore,
                          cause=1,
                          weighting='marginal',
-                         times= 1000,
+                         times= 1095,
                          ROC=TRUE)
 
 ROC_rt_predict <<- timeROC(T=nomoROC$OS.time,
@@ -151,49 +158,112 @@ ROC_rt_predict <<- timeROC(T=nomoROC$OS.time,
                            marker=nomoROC$predict,
                            cause=1,
                            weighting='marginal',
-                           times= 1000,
+                           times= 1095,
                            ROC=TRUE)
 
 
-png(file="Fig5D1.png",width=1800,height=2000,pointsize = 60)
+png(file="Fig5E1_3year.png",width=1800,height=2000,pointsize = 60)
 
-plot(ROC_rt_stage,time=1000,col='black',title=FALSE,lwd=8)+box(lwd=6)
+plot(ROC_rt_stage,time=1095,col='black',title=FALSE,lwd=8)+box(lwd=6)
+par(new=TRUE)
+plot(ROC_rt_score,time=1095,col='blue',title=FALSE,lwd=8)+box(lwd=6)
 par(new=TRUE)
 
-plot(ROC_rt_predict,time=1000,col='red',title=FALSE,lwd=8)
+plot(ROC_rt_predict,time=1095,col='red',title=FALSE,lwd=8)
 
 
 legend('bottomright',
        c(paste0('stage: ',round(ROC_rt_stage$AUC[2],2)),
-         
+         paste0('score: ',round(ROC_rt_score$AUC[2],2)),
          paste0('nomogram: ',round(ROC_rt_predict$AUC[2],2))
        ),
-       col=c('black','red'),lwd=8,bty = 'n')
+       col=c('black','blue','red'),lwd=8,bty = 'n')
 
 dev.off()
 
+#### 5year ROC  ####
+nomoROC =  clinicalexpr[,c('agegroup','gender','pM','pN1','pT','pT1','stage1','Riskscore','OS','OS.time')]
+nomoROC$predict = predict(f)
+nomoROC$OS = as.numeric(nomoROC$OS) - 1  #将event改为0和1
 
+ROC_rt_stage <<- timeROC(T=nomoROC$OS.time,
+                         delta=nomoROC$OS,   #时间 结局
+                         marker=nomoROC$stage1,
+                         cause=1,
+                         weighting='marginal',
+                         times= 1825,
+                         ROC=TRUE)
+
+ROC_rt_score <<- timeROC(T=nomoROC$OS.time,
+                         delta=nomoROC$OS,   #时间 结局
+                         marker=nomoROC$Riskscore,
+                         cause=1,
+                         weighting='marginal',
+                         times= 1825,
+                         ROC=TRUE)
+
+ROC_rt_predict <<- timeROC(T=nomoROC$OS.time,
+                           delta=nomoROC$OS,   #时间 结局
+                           marker=nomoROC$predict,
+                           cause=1,
+                           weighting='marginal',
+                           times= 1825,
+                           ROC=TRUE)
+
+
+png(file="Fig5F1_5year.png",width=1800,height=2000,pointsize = 60)
+
+plot(ROC_rt_stage,time=1825,col='black',title=FALSE,lwd=8)+box(lwd=6)
+par(new=TRUE)
+plot(ROC_rt_score,time=1825,col='blue',title=FALSE,lwd=8)+box(lwd=6)
+par(new=TRUE)
+
+plot(ROC_rt_predict,time=1825,col='red',title=FALSE,lwd=8)
+
+
+legend('bottomright',
+       c(paste0('stage: ',round(ROC_rt_stage$AUC[2],2)),
+         paste0('score: ',round(ROC_rt_score$AUC[2],2)),
+         paste0('nomogram: ',round(ROC_rt_predict$AUC[2],2))
+       ),
+       col=c('black','blue','red'),lwd=8,bty = 'n')
+
+dev.off()
 
 ### 2. 一致性 (calibration)
+# 1-year survival calibration curve
+f1 <- cph(Surv(OS.time,OS) ~ Age +Stage + RiskScore, x=T, y=T, surv=T, data=nomomatrix, time.inc=365)
+
+cal1 <- calibrate(f1, cmethod="KM", method="boot", u=365, m=50, B=375)
+
+pdf(file="1yearnomo.pdf",width=15,height=15,pointsize = 32)
+plot(cal1,xlim=c(0,1),ylim=c(0,1),xlab = 'Nomogram-predicted probability of 1-year survival',
+     ylab = 'Observed 1-year survival',lwd=6,
+     cex.lab=1.2, cex.axis=1.2, cex.main=1.2, cex.sub=0.5)+box(lwd=4)
+abline(a = 0, b = 1, col = "gray50",lwd=3,lty=2)
+dev.off()
+
 # 3-year survival calibration curve
 f3 <- cph(Surv(OS.time,OS) ~ Age +Stage + RiskScore, x=T, y=T, surv=T, data=nomomatrix, time.inc=1095)
 
-cal3 <- calibrate(f3, cmethod="KM", method="boot", u=1095, m=75, B=375)
+cal3 <- calibrate(f3, cmethod="KM", method="boot", u=1095, m=50, B=375)
 
 pdf(file="3yearnomo.pdf",width=15,height=15,pointsize = 32)
 plot(cal3,xlim=c(0,1),ylim=c(0,1),xlab = 'Nomogram-predicted probability of 3-year survival',
-     ylab = 'Observed 3-year survival',lwd=6)+box(lwd=4)
+     ylab = 'Observed 3-year survival',lwd=6,
+     cex.lab=1.2, cex.axis=1.2, cex.main=1.2, cex.sub=0.5)+box(lwd=4)
 abline(a = 0, b = 1, col = "gray50",lwd=3,lty=2)
 dev.off()
 
 # 5-year survival calibration curve
 f5 <- cph(Surv(OS.time,OS) ~ Age +Stage + RiskScore, x=T, y=T, surv=T, data=nomomatrix, time.inc=1825)
 
-cal5 <- calibrate(f5, cmethod="KM", method="boot", u=1825, m=75, B=228)
+cal5 <- calibrate(f5, cmethod="KM", method="boot", u=1825, m=50, B=228)
 
 pdf(file="5yearnomo.pdf",width=15,height=15,pointsize = 32)
 plot(cal5,xlim=c(0,1),ylim=c(0,1),xlab = 'Nomogram-predicted probability of 5-year survival',
-     ylab = 'Observed 5-year survival',lwd=6)+box(lwd=4)
+     ylab = 'Observed 5-year survival',lwd=6,
+     cex.lab=1.2, cex.axis=1.2, cex.main=1.2, cex.sub=0.5)+box(lwd=4)
 abline(a = 0, b = 1, col = "gray50",lwd=3,lty=2)
 dev.off()
 

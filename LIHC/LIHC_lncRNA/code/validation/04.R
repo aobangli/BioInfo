@@ -1,5 +1,5 @@
 rm(list = ls())
-load(file="survexprdata_lipid.Rdata")
+load(file="survexprdata_validation.Rdata")
 ######### riskscore surv #######
 scoresurv = survexprdata[, geneCoef[,1] ]
 scoresurv = log2(scoresurv +1)

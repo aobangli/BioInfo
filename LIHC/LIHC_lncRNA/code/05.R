@@ -2,7 +2,7 @@ rm(list = ls())
 
 coxhr = read.csv("Single_variable_cox_output.csv",header = T)
 
-confidence = 0.05
+confidence = 0.01
 
 coxhr = coxhr[coxhr$p.value < confidence , ]
 
@@ -31,7 +31,7 @@ tabletext <- cbind(c("Gene",as.vector(coxhr$gene)),
 
 
 library(forestplot)
-pdf(file="Fig2A.pdf",width=10,height=8,pointsize = 20)
+pdf(file="Fig2A.pdf",width=10,height=5,pointsize = 20)
 forestplot(tabletext,  #显示的文本
            c(NA,coxhr$median), #误差条的均值(此处为差值的中值)
            c(NA,coxhr$lower), #误差条的下界(此处为差值的25%分位数)
@@ -48,6 +48,6 @@ forestplot(tabletext,  #显示的文本
            txt_gp = fpTxtGp(ticks = gpar(cex = 1), xlab = gpar(cex = 1), cex = 1), #文本大小
            lineheight = "auto", #线的高度 
            xlab="Hazard ratio" ,#x轴的标题
-           xticks = c(0.8,1.0,1.2,1.4)
+           xticks = c(0.7,1.0,1.3,1.6,1.9)
 )
 dev.off()

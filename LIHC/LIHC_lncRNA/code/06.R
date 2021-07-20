@@ -134,7 +134,7 @@ clinical_gene_matrix = t(scale(clinicalexpr[,1:nrow(geneCoef)]))
 
 pheatmap(clinical_gene_matrix,show_colnames = F,annotation_col = annotation_col,
          cluster_cols = F,treeheight_row =10 ,annotation_colors = ann_colors,
-         cellheight = 60,cellwidth = 1.3,
+         cellheight = 20,cellwidth = 1.3,
          color = colorRampPalette(colors = c("blue","white","red"))(100),
          filename = "Fig4C.tiff")
 
@@ -201,7 +201,7 @@ forestplot(tabletext,  #显示的文本
            txt_gp = fpTxtGp(ticks = gpar(cex = 1), xlab = gpar(cex = 1), cex = 1), #文本大小
            lineheight = "auto", #线的高度 
            xlab="Hazard ratio" ,#x轴的标题
-           xticks = c(0.5,1.0,5,30)
+           xticks = c(0.5,1.0,5,15)
 )
 dev.off()
 
@@ -262,6 +262,6 @@ forestplot(tabletext,  #显示的文本
            txt_gp = fpTxtGp(ticks = gpar(cex = 1), xlab = gpar(cex = 1), cex = 1), #文本大小
            lineheight = "auto", #线的高度 
            xlab="Hazard ratio" ,#x轴的标题
-           xticks = c(0.1,1.0,5)
+           xticks = c(0.1,1.0,30)
 )
 dev.off()

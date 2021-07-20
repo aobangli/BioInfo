@@ -9,7 +9,7 @@ rm(list = ls())
 # mcp_counter
 # epic
 # timer
-immunedeconv_method = 'xcell'
+immunedeconv_method = 'timer'
 
 load(paste0('./', immunedeconv_method, '_res.Rdata'))
 immunedeconv_res = as.data.frame(immunedeconv_res)

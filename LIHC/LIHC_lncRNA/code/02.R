@@ -258,7 +258,10 @@ write.csv(coxoutput,'Single_variable_cox_output.csv')
 
 ######## lasso 回归 #######
 lasso_confidence = 0.01
-lassocoxgene = coxoutput[coxoutput[,2] < lasso_confidence, 1]
+
+coxoutput = as.data.frame(coxoutput)
+coxoutput$p.value = as.numeric(coxoutput$p.value)
+lassocoxgene = coxoutput[coxoutput$p.value < lasso_confidence, 1]
 
 lassoexpr= LIHC_PT_COUNT_expr[lassocoxgene,]
 colnames(lassoexpr)=substr(colnames(lassoexpr),1,12)

@@ -1,4 +1,6 @@
 rm(list = ls())
+setwd('./validation set')
+
 load(file = 'survexprdata_validation.Rdata')
 
 scoresurv = survexprdata[, geneCoef[,1] ]
@@ -76,3 +78,5 @@ pheatmap(sig_gene_matrix,show_colnames = F,annotation_col = annotation_col,clust
          cellheight = 24,cellwidth = 0.6,treeheight_row =5,
          color = colorRampPalette(colors = c("blue","white","red"))(100),
          filename = 'Fig2D.pdf')
+
+setwd('../')

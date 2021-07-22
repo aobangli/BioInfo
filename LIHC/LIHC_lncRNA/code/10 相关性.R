@@ -9,7 +9,7 @@ rm(list = ls())
 # mcp_counter
 # epic
 # timer
-immunedeconv_method = 'timer'
+immunedeconv_method = 'xcell'
 
 load(paste0('./', immunedeconv_method, '_res.Rdata'))
 immunedeconv_res = as.data.frame(immunedeconv_res)
@@ -42,9 +42,22 @@ row.names(immunedeconv_res) = immunedeconv_res_row_names
 #   immunedeconv_res = cbind(immunedeconv_res, immunedeconv_res[ , c('T cell CD4+ Th1')] / immunedeconv_res[ , c('T cell CD4+ Th2')])
 #   colnames(immunedeconv_res) = c(immunedeconv_colnames, 'Th1/Th2')
 # }
-  
 
-load(file = '../data/scoresurv.Rdata')
+#取全集并计算riskscore
+load(file="../data/survexprdata_geneCoef.Rdata")
+rm('survexprdata')
+
+load(file="../data/survexprdata.Rdata")
+scoresurv = entire_set[, geneCoef[,1] ]
+scoresurv = log2(scoresurv +1)
+scoresurv = cbind(scoresurv,entire_set[,((ncol(entire_set)-1):(ncol(entire_set)))])
+
+scoresurv$riskscore = 0
+for(i in 1:nrow(geneCoef)) {
+  scoresurv$riskscore = scoresurv$riskscore + scoresurv[, i] * as.numeric(geneCoef[i, 2])
+}
+
+#删除OS, OS.time
 scoresurv = scoresurv[ , -which(colnames(scoresurv) %in% c("OS", "OS.time"))]
 
 #保持两个数据集样本完全一致

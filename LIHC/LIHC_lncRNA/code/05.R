@@ -31,7 +31,7 @@ tabletext <- cbind(c("Gene",as.vector(coxhr$gene)),
 
 
 library(forestplot)
-pdf(file="Fig2A.pdf",width=10,height=5,pointsize = 20)
+pdf(file="Fig2A.pdf",width=10,height=8,pointsize = 20)
 forestplot(tabletext,  #显示的文本
            c(NA,coxhr$median), #误差条的均值(此处为差值的中值)
            c(NA,coxhr$lower), #误差条的下界(此处为差值的25%分位数)
@@ -48,6 +48,6 @@ forestplot(tabletext,  #显示的文本
            txt_gp = fpTxtGp(ticks = gpar(cex = 1), xlab = gpar(cex = 1), cex = 1), #文本大小
            lineheight = "auto", #线的高度 
            xlab="Hazard ratio" ,#x轴的标题
-           xticks = c(0.7,1.0,1.3,1.6,1.9)
+           xticks = c(0.5,1.0,1.5,2.0,2.5)
 )
 dev.off()

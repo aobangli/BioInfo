@@ -59,7 +59,7 @@ need_DEG=nrDEG
 
 ####### 火山图 #######
 logFC_cutoff=1.5
-confidenceDEG = 0.01
+confidenceDEG = 0.05
 need_DEG$change = as.factor(ifelse(need_DEG$pvalue < confidenceDEG & abs(need_DEG$log2FoldChange) > logFC_cutoff,
                                    ifelse(need_DEG$log2FoldChange > logFC_cutoff ,'UP','DOWN'),'NOT'))
 this_tile <- paste0('Cutoff for logFC is ',round(logFC_cutoff,3),
@@ -171,66 +171,76 @@ ggsave('Fig1C.pdf',width = 13, height = 10, units="cm",dpi = 180)
 # ggsave('Fig1E.pdf',width = 18, height = 9.5, units="cm",dpi = 180)
 # 
 
-
-####### 划分训练集和验证集 #######
-#以肿瘤样本集为全集划分, 即LIHC_PT_COUNT_expr
-set.seed(20210717)
-index <-  sort(sample(ncol(LIHC_PT_COUNT_expr), ncol(LIHC_PT_COUNT_expr)*.7))
-training_set <- LIHC_PT_COUNT_expr[, index]
-validation_set <-  LIHC_PT_COUNT_expr[, -index]
-
 save(need_DEG, nrDEG, DEG_limma_voom, LIHC_TN_COUNT_expr, LIHC_PT_COUNT_expr,
-     LIHC_CN_COUNT_expr, training_set, validation_set, group_list, file='LIHC_lipid_limma_DEG.Rdata')
+     LIHC_CN_COUNT_expr, group_list, file='LIHC_lipid_limma_DEG.Rdata')
 
 
 ####### 读取临床信息文件 #######
 rm(list = ls())
 
-# library('readr')
-# 
-# clinical_tsv = read_tsv('./clinical.cart.2021-07-09/clinical.tsv')
-# alive_group = clinical_tsv[clinical_tsv$vital_status == 'Alive' & clinical_tsv$days_to_last_follow_up > 0, c('case_submitter_id', 'days_to_last_follow_up')]
-# alive_group$OS = 0
-# names(alive_group) = c('id', 'OS.time', 'OS')
-# 
-# dead_group = clinical_tsv[clinical_tsv$vital_status == 'Dead' & clinical_tsv$days_to_death > 0, c('case_submitter_id', 'days_to_death')]
-# dead_group$OS = 1
-# names(dead_group) = c('id', 'OS.time', 'OS')
-# 
-# clinical = rbind(alive_group, dead_group)
-# clinical = clinical[!duplicated(clinical$id) , ]
-# 
-# clinical$OS.time = as.numeric(clinical$OS.time)
-# clinical = as.data.frame(clinical)
-# rownames(clinical) = clinical$id
+library('readr')
 
-clinical= read.csv("./clinical_change.csv")
-rownames(clinical) = clinical[,1]
-clinical = clinical[ , -1]
+clinical_tsv = read_tsv('./clinical.cart.2021-07-09/clinical.tsv')
+alive_group = clinical_tsv[clinical_tsv$vital_status == 'Alive' & clinical_tsv$days_to_last_follow_up > 0, c('case_submitter_id', 'days_to_last_follow_up')]
+alive_group$OS = 0
+names(alive_group) = c('id', 'OS.time', 'OS')
+
+dead_group = clinical_tsv[clinical_tsv$vital_status == 'Dead' & clinical_tsv$days_to_death > 0, c('case_submitter_id', 'days_to_death')]
+dead_group$OS = 1
+names(dead_group) = c('id', 'OS.time', 'OS')
+
+clinical = rbind(alive_group, dead_group)
+clinical = clinical[!duplicated(clinical$id) , ]
+
+clinical$OS.time = as.numeric(clinical$OS.time)
+clinical = as.data.frame(clinical)
+rownames(clinical) = clinical$id
+
+# clinical$OS = ifelse(clinical$OS.time > 1826, 0, clinical$OS)
+# clinical$OS.time = ifelse(clinical$OS.time > 1826, 1825, clinical$OS.time)
+
 save(clinical, file = './clinical.Rdata')
+# clinical= read.csv("./clinical_change.csv")
+# rownames(clinical) = clinical[,1]
+# clinical = clinical[ , -1]
 
 
-####### 单变量COX #######
+
+####### 生存表达数据取交集 #######
 
 rm(list = ls())
 load(file = './LIHC_lipid_limma_DEG.Rdata')
 load(file = './clinical.Rdata')
 
-survexprdata = training_set
-#survexprdata = LIHC_PT_COUNT_expr
+entire_set = LIHC_PT_COUNT_expr
 
-colnames(survexprdata)= substr(colnames(survexprdata),1,12)
+colnames(entire_set)= substr(colnames(entire_set),1,12)
 
 genename = rownames(need_DEG)[need_DEG$change != 'NOT']
-survexprdata= survexprdata[genename,]
+entire_set = entire_set[genename,]
 
-clinical= clinical[substr(colnames(survexprdata),1,12),]
+clinical= clinical[substr(colnames(entire_set),1,12),]
 
 OSdata=clinical[,c('id', 'OS', 'OS.time')]
 OSdata= na.omit(OSdata)
-survexprdata= survexprdata[,rownames(OSdata)]
-survexprdata=cbind(t(survexprdata),OSdata[,2:3])
+entire_set = entire_set[,rownames(OSdata)]
+entire_set = cbind(t(entire_set),OSdata[,2:3])
+
+####### 划分训练集和验证集 #######
+#以肿瘤样本集为全集划分, 即LIHC_PT_COUNT_expr
+
+set.seed(88906)
+training_set_rate = 0.5
+index <-  sort(sample(nrow(entire_set), nrow(entire_set) * training_set_rate))
+training_set <- entire_set[index, ]
+validation_set <-  entire_set[-index, ]
+
+survexprdata = training_set
+
+save(training_set, validation_set, entire_set, survexprdata, file = 'survexprdata.Rdata')
 write.csv(survexprdata,'survexprdata_lipid.csv')
+
+####### 单变量COX #######
 
 library('survival')
 library('survminer')
@@ -296,12 +306,12 @@ lassoGene = row.names(coef)[index]
 geneCoef = cbind(Gene=lassoGene,Coef=actCoef) 
 geneCoef   #查看模型的相关系数
 
-save(survexprdata, geneCoef, file='survexprdata_lipid.Rdata')
+save(survexprdata, geneCoef, file='survexprdata_geneCoef.Rdata')
 
+
+###### 计算riskscore ######
 rm(list = ls())
-#setwd(dir = 'D:/LIHC/COUNT')
-load(file = 'survexprdata_lipid.Rdata')
-######### riskscore surv #######
+load(file = 'survexprdata_geneCoef.Rdata')
 scoresurv = survexprdata[, geneCoef[,1] ]
 scoresurv = log2(scoresurv +1)
 scoresurv = cbind(scoresurv,survexprdata[,((ncol(survexprdata)-1):(ncol(survexprdata)))])
@@ -316,25 +326,27 @@ save(scoresurv, file = 'scoresurv.Rdata')
 ###### 按riskscore中位数分组 ######
 
 scoresurv$scoregroup = ifelse(scoresurv$riskscore<median(scoresurv$riskscore),'low','high')
-
-fit <- survfit(Surv(OS.time, OS) ~ scoregroup, data = scoresurv)
-surv_diff <- survdiff(Surv(OS.time, OS) ~ scoregroup, data = scoresurv)
+scoresurv$OS.time1 = scoresurv$OS.time/(365)
+fit <- survfit(Surv(OS.time1, OS) ~ scoregroup, data = scoresurv)
+surv_diff <- survdiff(Surv(OS.time1, OS) ~ scoregroup, data = scoresurv)
 pvalue <- 1 - pchisq(surv_diff$chisq, length(surv_diff$n) -1)
 # pvalue = 6.012701e-06
 write.csv(scoresurv,'scoresurv.csv')
 gg<- ggsurvplot(
   fit,pval = TRUE,
+  pval.size = 8,
   ggtheme = theme(panel.background=element_blank(),
                   axis.line = element_line(size=1),
                   plot.title = element_text(hjust = 0.5),
-                  axis.text = element_text(size = 11,face = "bold")),
+                  axis.text = element_text(size = 16,face = "bold")),
   risk.table = TRUE,
   legend.title="Risk score",palette = c("red","blue"),
   font.legend=c(11,"bold","black"),
   legend.labs=c("High","Low"),
   title="TCGA-LIHC",font.title=c(18,"bold","black"),
-  xlab="Time (days)",ylab="Survival probability",
-  font.xlab=c(14,"bold","black"), font.ylab=c(14,"bold","black"))
+  xlab="Time (years)",ylab="Survival probability",
+  font.xlab=c(18,"bold","black"), font.ylab=c(18,"bold","black"),
+  break.x.by = 1)
 
 pdf('kmplot.pdf')
 print(gg,newpage= FALSE)

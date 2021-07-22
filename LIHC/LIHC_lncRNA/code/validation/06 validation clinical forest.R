@@ -1,6 +1,8 @@
 rm(list = ls())
 options(stringsAsFactors = F)
-clinical= read.csv("./clinical_change.csv")
+setwd('./validation set')
+
+clinical= read.csv("../clinical_change.csv")
 rownames(clinical) = clinical[,1]
 clinical = clinical[ , -1]
 
@@ -11,7 +13,7 @@ clinical = clinical[clinical$pT != 'TX', ]
 
 ########## 计算 ##########
 
-load("./survexprdata_geneCoef.Rdata")
+load("./survexprdata_validation.Rdata")
 
 clinicalexpr = log2(survexprdata[, geneCoef[,1] ]+1)
 clinicalgene = colnames(clinicalexpr)
@@ -138,6 +140,7 @@ pheatmap(clinical_gene_matrix,show_colnames = F,annotation_col = annotation_col,
          color = colorRampPalette(colors = c("blue","white","red"))(100),
          filename = "Fig4C.tiff")
 
+
 ####### 单变量COX #######
 
 library('survival')
@@ -147,7 +150,6 @@ clinical_expr_ucox = clinicalexpr[,c(clinicalsig,'OS','OS.time')]
 
 clinical_univ_cox=c()
 for(i in 1:length(clinicalsig)) {
-  
   res.cox= coxph(Surv(OS.time,OS)~clinical_expr_ucox[,i]  ,data=clinical_expr_ucox)
   summary(res.cox)
   
@@ -201,7 +203,7 @@ forestplot(tabletext,  #显示的文本
            txt_gp = fpTxtGp(ticks = gpar(cex = 1), xlab = gpar(cex = 1), cex = 1), #文本大小
            lineheight = "auto", #线的高度 
            xlab="Hazard ratio" ,#x轴的标题
-           xticks = c(0.25,0.5,1.0,5,10,15)
+           xticks = c(0.5,1.0,5,15)
 )
 dev.off()
 
@@ -262,6 +264,8 @@ forestplot(tabletext,  #显示的文本
            txt_gp = fpTxtGp(ticks = gpar(cex = 1), xlab = gpar(cex = 1), cex = 1), #文本大小
            lineheight = "auto", #线的高度 
            xlab="Hazard ratio" ,#x轴的标题
-           xticks = c(0.1,1.0,10,30)
+           xticks = c(0.1,1.0,5,15)
 )
 dev.off()
+
+setwd('../')

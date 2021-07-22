@@ -12,7 +12,7 @@ rm(list = ls())
 clinical= read.csv("./clinical_change.csv")
 rownames(clinical) = clinical[,1]
 
-load("./survexprdata_lipid.Rdata")
+load("./survexprdata_geneCoef.Rdata")
 
 clinicalexpr = log2(survexprdata[, geneCoef[,1] ]+1)
 clinicalgene = colnames(clinicalexpr)
@@ -234,7 +234,7 @@ dev.off()
 # 1-year survival calibration curve
 f1 <- cph(Surv(OS.time,OS) ~ Age +Stage + RiskScore, x=T, y=T, surv=T, data=nomomatrix, time.inc=365)
 
-cal1 <- calibrate(f1, cmethod="KM", method="boot", u=365, m=50, B=375)
+cal1 <- calibrate(f1, cmethod="KM", method="boot", u=365, m=50, B=181)
 
 pdf(file="1yearnomo.pdf",width=15,height=15,pointsize = 32)
 plot(cal1,xlim=c(0,1),ylim=c(0,1),xlab = 'Nomogram-predicted probability of 1-year survival',
@@ -246,7 +246,7 @@ dev.off()
 # 3-year survival calibration curve
 f3 <- cph(Surv(OS.time,OS) ~ Age +Stage + RiskScore, x=T, y=T, surv=T, data=nomomatrix, time.inc=1095)
 
-cal3 <- calibrate(f3, cmethod="KM", method="boot", u=1095, m=50, B=375)
+cal3 <- calibrate(f3, cmethod="KM", method="boot", u=1095, m=50, B=181)
 
 pdf(file="3yearnomo.pdf",width=15,height=15,pointsize = 32)
 plot(cal3,xlim=c(0,1),ylim=c(0,1),xlab = 'Nomogram-predicted probability of 3-year survival',
@@ -258,7 +258,7 @@ dev.off()
 # 5-year survival calibration curve
 f5 <- cph(Surv(OS.time,OS) ~ Age +Stage + RiskScore, x=T, y=T, surv=T, data=nomomatrix, time.inc=1825)
 
-cal5 <- calibrate(f5, cmethod="KM", method="boot", u=1825, m=50, B=228)
+cal5 <- calibrate(f5, cmethod="KM", method="boot", u=1825, m=50, B=181)
 
 pdf(file="5yearnomo.pdf",width=15,height=15,pointsize = 32)
 plot(cal5,xlim=c(0,1),ylim=c(0,1),xlab = 'Nomogram-predicted probability of 5-year survival',

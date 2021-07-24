@@ -2,7 +2,7 @@ rm(list = ls())
 
 coxhr = read.csv("Single_variable_cox_output.csv",header = T)
 
-confidence = 0.01
+confidence = 0.05
 
 coxhr = coxhr[coxhr$p.value < confidence , ]
 
@@ -18,7 +18,7 @@ coxhr[coxhr$p.value >= 0.001 , ]$p.value.text = as.character(sprintf("%0.4f", co
 
 coxhr$HR.text = paste(sprintf("%0.3f", coxhr$HR) , paste('(' , sprintf("%0.3f", coxhr$lower) , '-' , sprintf("%0.3f", coxhr$upper) , ')' , sep = ''))
 
-tabletext <- cbind(c("Gene",as.vector(coxhr$gene)),
+tabletext <- cbind(c("LncRNA",as.vector(coxhr$gene)),
                    c("P-value",as.vector(coxhr$p.value.text)),
                    c("Hazard ratio",as.vector(coxhr$HR.text)))
 
@@ -31,7 +31,7 @@ tabletext <- cbind(c("Gene",as.vector(coxhr$gene)),
 
 
 library(forestplot)
-pdf(file="Fig2A.pdf",width=10,height=8,pointsize = 20)
+pdf(file="Fig2A.pdf",width=9,height=6,pointsize = 20)
 forestplot(tabletext,  #显示的文本
            c(NA,coxhr$median), #误差条的均值(此处为差值的中值)
            c(NA,coxhr$lower), #误差条的下界(此处为差值的25%分位数)
@@ -48,6 +48,6 @@ forestplot(tabletext,  #显示的文本
            txt_gp = fpTxtGp(ticks = gpar(cex = 1), xlab = gpar(cex = 1), cex = 1), #文本大小
            lineheight = "auto", #线的高度 
            xlab="Hazard ratio" ,#x轴的标题
-           xticks = c(0.5,1.0,1.5,2.0,2.5)
+           xticks = c(0.5,1.0,1.5,2.0)
 )
 dev.off()

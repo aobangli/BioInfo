@@ -23,16 +23,16 @@ ROC_rt <<- timeROC(T=scoresurv$OS.time,delta=scoresurv$OS,
                    weighting='marginal',
                    times=c(365,1095, 1824),ROC=TRUE)
 
-png(file="ROC.png",width=2000,height=2000,pointsize = 60)
+pdf(file="ROC.pdf",width = 10,height = 11,pointsize = 25)
 
-plot(ROC_rt,time=365,title=FALSE,lwd=8)+box(lwd=5)
-plot(ROC_rt,time=1095,col='blue',add=TRUE,title=FALSE,lwd=8)
-plot(ROC_rt,time=1824,col='black',add=TRUE,title=FALSE,lwd=8)
+plot(ROC_rt,time=365,title=FALSE,lwd=3)+box(lwd=4)
+plot(ROC_rt,time=1095,col='blue',add=TRUE,title=FALSE,lwd=3)
+plot(ROC_rt,time=1824,col='black',add=TRUE,title=FALSE,lwd=3)
 
 legend('bottomright',
-       c(paste0('AUC at 1 years: ',round(ROC_rt$AUC[1],2)),
-         paste0('AUC at 3 years: ',round(ROC_rt$AUC[2],2)),
-         paste0('AUC at 5 years: ',round(ROC_rt$AUC[3],2))),
+       c(paste0('AUC at 1 years: ',round(ROC_rt$AUC[1],3)),
+         paste0('AUC at 3 years: ',round(ROC_rt$AUC[2],3)),
+         paste0('AUC at 5 years: ',round(ROC_rt$AUC[3],3))),
        col=c('red','blue','black'),lwd=4,bty = 'n')
 dev.off()
 

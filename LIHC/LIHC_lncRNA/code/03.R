@@ -19,10 +19,11 @@ distribution$scoregroup = ifelse(distribution$riskscore<median(distribution$risk
 library(ggplot2)
 P<- ggplot(distribution,aes(x=Patients, y=riskscore,colour =scoregroup ,))+
   geom_point() +scale_colour_manual(values=c("#cc0000","#000099"))+
-  geom_hline(yintercept=c(median(distribution$riskscore)),linetype=2)+
-  geom_vline(xintercept=c(median(distribution$Patients)),linetype=2)+
-  theme(legend.position = c(0.07, 0.9),legend.text = element_text(size = 16),
+  geom_hline(yintercept=c(median(distribution$riskscore)),linetype=2,size=1.2)+
+  geom_vline(xintercept=c(median(distribution$Patients)),linetype=2,size=1.2)+
+  theme(legend.position = c(0.08, 0.85),legend.text = element_text(size = 16),
         legend.title = element_text(size = 0),
+        panel.border = element_rect(fill=NA,color="black", size=2, linetype="solid"),
         panel.background = element_rect(fill = 'transparent',colour = 'black'),
         axis.text.x=element_text(size = 16, vjust = 0.5, hjust = 0.5),
         axis.text.y=element_text(size = 16, vjust = 0.5, hjust = 0.5),
@@ -31,7 +32,7 @@ P<- ggplot(distribution,aes(x=Patients, y=riskscore,colour =scoregroup ,))+
   xlab("Patients (increasing risk score)") + ylab("Risk score") 
 
 ggsave(filename = "risk_distribution.pdf", 
-       width = 25, height = 10, units="cm",dpi = 500)
+       width = 25, height = 8, units="cm",dpi = 500)
 
 
 ######## score与生存 散点图 ######
@@ -41,9 +42,10 @@ distribution$survivaltime = distribution$OS.time/(365/12)
 library(ggplot2)
 Q<- ggplot(distribution,aes(x=Patients, y=survivaltime,colour =event,))+
   geom_point(size = 3) +scale_colour_manual(values=c("#000099","#cc0000"))+
-  geom_vline(xintercept=c(median(distribution$Patients)),linetype=2)+
-  theme(legend.position = c(0.07, 0.9),legend.text = element_text(size = 16),
+  geom_vline(xintercept=c(median(distribution$Patients)),linetype=2,size=1.2)+
+  theme(legend.position = c(0.07, 0.85),legend.text = element_text(size = 16),
         legend.title = element_text(size = 0),
+        panel.border = element_rect(fill=NA,color="black", size=2, linetype="solid"),
         panel.background = element_rect(fill = 'transparent',colour = 'black'),
         axis.text.x=element_text(size = 16, vjust = 0.5, hjust = 0.5),
         axis.text.y=element_text(size = 16, vjust = 0.5, hjust = 0.5),
@@ -52,7 +54,7 @@ Q<- ggplot(distribution,aes(x=Patients, y=survivaltime,colour =event,))+
   xlab("Patients (increasing risk score)") + ylab("Survival time (months)") 
 
 ggsave(filename = "time_distribution.pdf", 
-       width = 25, height = 10, units="cm",dpi = 500)
+       width = 25, height = 8, units="cm",dpi = 500)
 
 
 
@@ -73,6 +75,6 @@ tsig_gene_matrix = t(sig_gene_matrix)
 
 
 pheatmap(sig_gene_matrix,show_colnames = F,annotation_col = annotation_col,cluster_cols = F,annotation_colors = ann_colors, 
-         cellheight = 24,cellwidth = 0.6,treeheight_row =5,
+         cellheight = 26,cellwidth = 0.6,treeheight_row =5,
          color = colorRampPalette(colors = c("blue","white","red"))(100),
          filename = 'Fig2D.pdf')

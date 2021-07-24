@@ -4,12 +4,10 @@ rm(list = ls())
 #可选量化方法
 # quantiseq
 # xcell
-# cibersort
-# cibersort_abs
 # mcp_counter
 # epic
 # timer
-immunedeconv_method = 'xcell'
+immunedeconv_method = 'timer'
 
 load(paste0('./', immunedeconv_method, '_res.Rdata'))
 immunedeconv_res = as.data.frame(immunedeconv_res)
@@ -67,28 +65,9 @@ scoresurv = scoresurv[ids, ]
 
 library(psych)
 
-p_matrix = c()
-r_matrix = c()
-for(i in 1 : length(colnames(immunedeconv_res))) {
-  corr = corr.test(immunedeconv_res[ , i], scoresurv, use = "pairwise", method = "pearson", adjust = "none")
-  
-  p_result = cbind("cell" = colnames(immunedeconv_res)[i], "p" = corr$p)
-  r_result = cbind("cell" = colnames(immunedeconv_res)[i], "r" = corr$r)
-  
-  p_matrix = rbind(p_matrix, p_result)
-  r_matrix = rbind(r_matrix, r_result)
-}
-
-row.names(p_matrix) = p_matrix[ , c('cell')]
-p_matrix = p_matrix[ , -which('cell' %in% colnames(p_matrix))]
-row.names(r_matrix) = r_matrix[ , c('cell')]
-r_matrix = r_matrix[ , -which('cell' %in% colnames(r_matrix))]
-
-row_names = row.names(p_matrix)
-p_matrix = apply(p_matrix, 2, as.numeric)
-r_matrix = apply(r_matrix, 2, as.numeric)
-row.names(p_matrix) = row_names
-row.names(r_matrix) = row_names
+corr = corr.test(immunedeconv_res, scoresurv, use = "pairwise", method = "pearson", adjust = "none")
+p_matrix = corr$p
+r_matrix = corr$r
 
 save(p_matrix, r_matrix, file = paste0('./immune_correlation_matrix_', immunedeconv_method, '.Rdata'))
 write.csv(p_matrix, file = paste0('./immune_correlation_P_matrix_', immunedeconv_method, '.csv'))
@@ -108,3 +87,4 @@ pheatmap(r_matrix, display_numbers = matrix(ifelse(p_matrix <= 0.001, "***", ife
                    colorRampPalette(colors = c("white","red"))((length(bk)-1)/2)),
          legend_breaks=seq(-0.6,0.6,0.3),
          breaks=bk,width = 9,height = cell_num * 0.6 + 2, filename = paste0('./immune_correlation_heatmap_', immunedeconv_method, '.pdf'))
+

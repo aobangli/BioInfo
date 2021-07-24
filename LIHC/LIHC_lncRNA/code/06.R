@@ -88,18 +88,18 @@ ROC_rt_M <<- timeROC(T=clinicalexpr$OS.time,
                      times= ROC_TIME,
                      ROC=TRUE)
 
-png(file="Fig4D.png",width=1800,height=2000,pointsize = 60)
-plot(ROC_rt_score,time=ROC_TIME,col= '#FF1717',title=FALSE,lwd=8)+box(lwd=5)
+pdf(file="Fig4D.pdf",width = 10,height = 11,pointsize = 25)
+plot(ROC_rt_score,time=ROC_TIME,col= '#FF1717',title=FALSE,lwd=3)+box(lwd=4)
 par(new=TRUE)
-plot(ROC_rt_stage,time=ROC_TIME,col='#50FFAF',title=FALSE,lwd=8)
+plot(ROC_rt_stage,time=ROC_TIME,col='#50FFAF',title=FALSE,lwd=3)
 par(new=TRUE)
-plot(ROC_rt_age,time=ROC_TIME,col='#FFDC16',title=FALSE,lwd=8)
+plot(ROC_rt_age,time=ROC_TIME,col='#FFDC16',title=FALSE,lwd=3)
 par(new=TRUE)
-plot(ROC_rt_T,time=ROC_TIME,col='#0089FF',title=FALSE,lwd=8)
+plot(ROC_rt_T,time=ROC_TIME,col='#0089FF',title=FALSE,lwd=3)
 par(new=TRUE)
-plot(ROC_rt_N,time=ROC_TIME,col='#391496',title=FALSE,lwd=8)
+plot(ROC_rt_N,time=ROC_TIME,col='#391496',title=FALSE,lwd=3)
 par(new=TRUE)
-plot(ROC_rt_M,time=ROC_TIME,col='#FF05D9',title=FALSE,lwd=8)
+plot(ROC_rt_M,time=ROC_TIME,col='#FF05D9',title=FALSE,lwd=3)
 
 legend('bottomright',
        c(paste0('Risk score: ',round(ROC_rt_score$AUC[2],3)),
@@ -134,9 +134,9 @@ clinical_gene_matrix = t(scale(clinicalexpr[,1:nrow(geneCoef)]))
 
 pheatmap(clinical_gene_matrix,show_colnames = F,annotation_col = annotation_col,
          cluster_cols = F,treeheight_row =10 ,annotation_colors = ann_colors,
-         cellheight = 20,cellwidth = 1.3,
+         cellheight = 23,cellwidth = 1.3,
          color = colorRampPalette(colors = c("blue","white","red"))(100),
-         filename = "Fig4C.tiff")
+         filename = "Fig4C.pdf")
 
 ####### 单变量COX #######
 

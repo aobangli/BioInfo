@@ -69,15 +69,16 @@ library(ggplot2)
 g = ggplot(data=need_DEG, 
            aes(x=log2FoldChange, y=-log10(pvalue), 
                color=change)) +
-  geom_hline(yintercept=-log10(confidenceDEG),linetype=2)+  #增加阈值线
-  geom_vline(xintercept=c(-logFC_cutoff , logFC_cutoff),linetype=2)+
-  geom_point(alpha=1, size=2) +
+  geom_point(alpha=1, size=3.5) +
+  geom_hline(yintercept=-log10(confidenceDEG),linetype=2,size=1.2)+  #增加阈值线
+  geom_vline(xintercept=c(-logFC_cutoff , logFC_cutoff),linetype=2,size=1.2)+
   theme(panel.background = element_rect(fill = 'transparent',colour = 'black'),
-        axis.text.x=element_text(size = 12, vjust = 0.5, hjust = 0.5),
-        axis.text.y=element_text(size = 12, vjust = 0.5, hjust = 0.5),
-        axis.title.x = element_text(size = 15, vjust = 0.5, hjust = 0.5),
-        axis.title.y = element_text(size = 15, vjust = 0.5, hjust = 0.5))+
-  xlab("log2(Fold change)") + ylab("-log10(Adjust P-value)") +
+        panel.border = element_rect(fill=NA,color="black", size=2, linetype="solid"),
+        axis.text.x=element_text(size = 18, vjust = 0.5, hjust = 0.5),
+        axis.text.y=element_text(size = 18, vjust = 0.5, hjust = 0.5),
+        axis.title.x = element_text(size = 20, vjust = 0.5, hjust = 0.5),
+        axis.title.y = element_text(size = 20, vjust = 0.5, hjust = 0.5))+
+  xlab("log2(Fold change)") + ylab("-log10(P value)") +
   ggtitle( this_tile ) + theme(plot.title = element_text(size=15,hjust = 0.5))+
   scale_colour_manual(values = c('blue','grey','red')) 
 
@@ -105,7 +106,7 @@ rownames(annotation_col)= colnames(choose_DEG_matrix)
 
 colnames(annotation_col)=' '
 pheatmap(choose_DEG_matrix,show_colnames = F,annotation_col = annotation_col,cluster_cols = F,
-         cellheight = 9,cellwidth = 1.9,
+         cellheight = 10,cellwidth = 0.8,treeheight_row =12,
          color = colorRampPalette(colors = c("blue","white","red"))(100),
          filename = 'Fig1B.pdf')
 
@@ -113,11 +114,16 @@ pheatmap(choose_DEG_matrix,show_colnames = F,annotation_col = annotation_col,clu
 library(ggfortify)
 df=as.data.frame(t(choose_DEG_matrix))#行列转换
 df$group=group_list_heatmap
-df$group=gsub('Normal','2 Normal',df$group)
-df$group=gsub('Tumor','1 Tumor',df$group)
 
+autoplot(prcomp( df[,1:(ncol(df)-1)] ), data=df,colour = "group")+
+  theme(panel.background = element_rect(fill = 'transparent',colour = 'black'),
+    panel.border = element_rect(fill=NA,color="black", size=1.8, linetype="solid"),
+    axis.text.x=element_text(size = 14, vjust = 0.5, hjust = 0.5),
+    axis.text.y=element_text(size = 14, vjust = 0.5, hjust = 0.5),
+    axis.title.x = element_text(size = 16, vjust = 0.5, hjust = 0.5),
+    axis.title.y = element_text(size = 16, vjust = 0.5, hjust = 0.5))+
+  scale_colour_manual(values = c('#00DAE0','#FF9289'))
 
-autoplot(prcomp( df[,1:(ncol(df)-1)] ), data=df,colour = "group")+theme_bw()#画图
 ggsave('Fig1C.pdf',width = 13, height = 10, units="cm",dpi = 180)
 
 ####### GO 富集分析 #####
@@ -229,7 +235,7 @@ entire_set = cbind(t(entire_set),OSdata[,2:3])
 ####### 划分训练集和验证集 #######
 #以肿瘤样本集为全集划分, 即LIHC_PT_COUNT_expr
 
-set.seed(88906)
+set.seed(110526)
 training_set_rate = 0.5
 index <-  sort(sample(nrow(entire_set), nrow(entire_set) * training_set_rate))
 training_set <- entire_set[index, ]
@@ -267,7 +273,7 @@ for(i in 1:length(coxgene)) {
 write.csv(coxoutput,'Single_variable_cox_output.csv')
 
 ######## lasso 回归 #######
-lasso_confidence = 0.01
+lasso_confidence = 0.05
 
 coxoutput = as.data.frame(coxoutput)
 coxoutput$p.value = as.numeric(coxoutput$p.value)
@@ -288,13 +294,13 @@ y=cbind(time=OStime,status=OS)
 
 fit=glmnet(x, y, family = "cox", maxit = 1000) 
 pdf(file="Fig2B.pdf",width=12,height=12,pointsize = 24)
-plot(fit, xvar = "lambda", label = TRUE,lwd=6,cex.axis=1.2,cex.lab = 1.5)+box(lwd=4)
+plot(fit, xvar = "lambda", label = TRUE,lwd=8,cex.axis=1.2,cex.lab = 1.5)+box(lwd=6)
 dev.off()
 
 
 cvfit = cv.glmnet(x, y, family="cox", maxit = 1000) 
 pdf(file="Fig2C.pdf",width=12,height=12,pointsize = 24)
-plot(cvfit,lwd=6,cex.axis=1.2,cex.lab = 1.5)+box(lwd=4) 
+plot(cvfit,lwd=8,cex.axis=1.2,cex.lab = 1.5)+box(lwd=6) 
 #其中两条虚线分别指示了两个特殊的λ值 
 abline(v = log(c(cvfit$lambda.min,cvfit$lambda.1se)),lty="dashed")
 dev.off()
@@ -341,7 +347,7 @@ gg<- ggsurvplot(
                   axis.text = element_text(size = 16,face = "bold")),
   risk.table = TRUE,
   legend.title="Risk score",palette = c("red","blue"),
-  font.legend=c(11,"bold","black"),
+  font.legend=c(16,"bold","black"),
   legend.labs=c("High","Low"),
   title="TCGA-LIHC",font.title=c(18,"bold","black"),
   xlab="Time (years)",ylab="Survival probability",

@@ -112,22 +112,21 @@ ROC_rt_predict <<- timeROC(T=nomoROC$OS.time,
                            ROC=TRUE)
 
 
-png(file="Fig5D1_1year.png",width=1800,height=2000,pointsize = 60)
+pdf(file="Fig5D1_1year.pdf",width = 10,height = 11,pointsize = 25)
 
-plot(ROC_rt_stage,time=365,col='black',title=FALSE,lwd=8)+box(lwd=6)
+plot(ROC_rt_stage,time=365,col='black',title=FALSE,lwd=3)+box(lwd=4)
 par(new=TRUE)
-plot(ROC_rt_score,time=365,col='blue',title=FALSE,lwd=8)+box(lwd=6)
+plot(ROC_rt_score,time=365,col='blue',title=FALSE,lwd=3)
 par(new=TRUE)
-
-plot(ROC_rt_predict,time=365,col='red',title=FALSE,lwd=8)
+plot(ROC_rt_predict,time=365,col='red',title=FALSE,lwd=3)
 
 
 legend('bottomright',
-       c(paste0('stage: ',round(ROC_rt_stage$AUC[2],2)),
-         paste0('score: ',round(ROC_rt_score$AUC[2],2)),
-         paste0('nomogram: ',round(ROC_rt_predict$AUC[2],2))
+       c(paste0('stage: ',round(ROC_rt_stage$AUC[2],3)),
+         paste0('score: ',round(ROC_rt_score$AUC[2],3)),
+         paste0('nomogram: ',round(ROC_rt_predict$AUC[2],3))
        ),
-       col=c('black','blue','red'),lwd=8,bty = 'n')
+       col=c('black','blue','red'),lwd=4,bty = 'n')
 
 dev.off()
 
@@ -162,22 +161,22 @@ ROC_rt_predict <<- timeROC(T=nomoROC$OS.time,
                            ROC=TRUE)
 
 
-png(file="Fig5E1_3year.png",width=1800,height=2000,pointsize = 60)
+pdf(file="Fig5E1_3year.pdf",width = 10,height = 11,pointsize = 25)
 
-plot(ROC_rt_stage,time=1095,col='black',title=FALSE,lwd=8)+box(lwd=6)
+plot(ROC_rt_stage,time=1095,col='black',title=FALSE,lwd=3)+box(lwd=4)
 par(new=TRUE)
-plot(ROC_rt_score,time=1095,col='blue',title=FALSE,lwd=8)+box(lwd=6)
+plot(ROC_rt_score,time=1095,col='blue',title=FALSE,lwd=3)
 par(new=TRUE)
 
-plot(ROC_rt_predict,time=1095,col='red',title=FALSE,lwd=8)
+plot(ROC_rt_predict,time=1095,col='red',title=FALSE,lwd=3)
 
 
 legend('bottomright',
-       c(paste0('stage: ',round(ROC_rt_stage$AUC[2],2)),
-         paste0('score: ',round(ROC_rt_score$AUC[2],2)),
-         paste0('nomogram: ',round(ROC_rt_predict$AUC[2],2))
+       c(paste0('stage: ',round(ROC_rt_stage$AUC[2],3)),
+         paste0('score: ',round(ROC_rt_score$AUC[2],3)),
+         paste0('nomogram: ',round(ROC_rt_predict$AUC[2],3))
        ),
-       col=c('black','blue','red'),lwd=8,bty = 'n')
+       col=c('black','blue','red'),lwd=4,bty = 'n')
 
 dev.off()
 
@@ -211,22 +210,22 @@ ROC_rt_predict <<- timeROC(T=nomoROC$OS.time,
                            ROC=TRUE)
 
 
-png(file="Fig5F1_5year.png",width=1800,height=2000,pointsize = 60)
+pdf(file="Fig5F1_5year.pdf",width = 10,height = 11,pointsize = 25)
 
-plot(ROC_rt_stage,time=1825,col='black',title=FALSE,lwd=8)+box(lwd=6)
+plot(ROC_rt_stage,time=1825,col='black',title=FALSE,lwd=3)+box(lwd=4)
 par(new=TRUE)
-plot(ROC_rt_score,time=1825,col='blue',title=FALSE,lwd=8)+box(lwd=6)
+plot(ROC_rt_score,time=1825,col='blue',title=FALSE,lwd=3)
 par(new=TRUE)
 
-plot(ROC_rt_predict,time=1825,col='red',title=FALSE,lwd=8)
+plot(ROC_rt_predict,time=1825,col='red',title=FALSE,lwd=3)
 
 
 legend('bottomright',
-       c(paste0('stage: ',round(ROC_rt_stage$AUC[2],2)),
-         paste0('score: ',round(ROC_rt_score$AUC[2],2)),
-         paste0('nomogram: ',round(ROC_rt_predict$AUC[2],2))
+       c(paste0('stage: ',round(ROC_rt_stage$AUC[2],3)),
+         paste0('score: ',round(ROC_rt_score$AUC[2],3)),
+         paste0('nomogram: ',round(ROC_rt_predict$AUC[2],3))
        ),
-       col=c('black','blue','red'),lwd=8,bty = 'n')
+       col=c('black','blue','red'),lwd=4,bty = 'n')
 
 dev.off()
 

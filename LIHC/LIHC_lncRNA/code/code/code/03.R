@@ -1,8 +1,5 @@
 rm(list = ls())
-#setwd('validation set')
-setwd('entire set')
-
-load(file = 'survexprdata_validation.Rdata')
+load(file = 'survexprdata_geneCoef.Rdata')
 
 scoresurv = survexprdata[, geneCoef[,1] ]
 scoresurv = log2(scoresurv +1)
@@ -61,7 +58,6 @@ ggsave(filename = "time_distribution.pdf",
 
 
 
-
 ######## sig_gene热图 ######
 
 library(pheatmap)
@@ -82,5 +78,3 @@ pheatmap(sig_gene_matrix,show_colnames = F,annotation_col = annotation_col,clust
          cellheight = 26,cellwidth = 0.6,treeheight_row =5,
          color = colorRampPalette(colors = c("blue","white","red"))(100),
          filename = 'Fig2D.pdf')
-
-setwd('../')

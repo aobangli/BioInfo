@@ -50,3 +50,4 @@ vignettes/*.pdf
 *.soft
 *.json
 *.bak
+*.maf

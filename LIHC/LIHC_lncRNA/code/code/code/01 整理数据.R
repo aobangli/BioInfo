@@ -127,10 +127,6 @@ lncRNA_matrix = lncRNA_matrix[, which(apply(lncRNA_matrix,2,function(x){return(s
 
 save(lncRNA_matrix, notLncRNA_matrix, file = './lncRNA_matrix.Rdata')
 
-
-rm(list = ls())
-load('./lncRNA_matrix.Rdata')
-
 ####### 选择花生四烯酸基因 #####
 
 arachidonic_gene = c("PLA2G10","PLA2G2D","PLA2G2E","PLA2G3",

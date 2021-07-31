@@ -1,16 +1,14 @@
 library('survival')
 library('survminer')
 rm(list = ls())
-#setwd('validation set')
-setwd('entire set')
-
+setwd('validation set')
 load(file = '../survexprdata_geneCoef.Rdata')
 rm('survexprdata')
 
 load(file = '../survexprdata.Rdata')
 
-#survexprdata = validation_set
-survexprdata = entire_set
+survexprdata = validation_set
+#survexprdata = entire_set
 
 save(survexprdata, geneCoef, file='survexprdata_validation.Rdata')
 

@@ -1,9 +1,6 @@
 rm(list = ls())
 options(stringsAsFactors = F)
-#setwd('validation set')
-setwd('entire set')
-
-clinical= read.csv("../clinical_change.csv")
+clinical= read.csv("./clinical_change.csv")
 rownames(clinical) = clinical[,1]
 clinical = clinical[ , -1]
 
@@ -14,7 +11,7 @@ clinical = clinical[clinical$pT != 'TX', ]
 
 ########## 计算 ##########
 
-load("./survexprdata_validation.Rdata")
+load("./survexprdata_geneCoef.Rdata")
 
 clinicalexpr = log2(survexprdata[, geneCoef[,1] ]+1)
 clinicalgene = colnames(clinicalexpr)
@@ -41,7 +38,7 @@ clinicalexpr$ppN = as.numeric(substring(clinicalexpr$pN,2,2))
 library(timeROC)
 library(survival)
 
-ROC_TIME = 1824
+ROC_TIME = 365
 
 ROC_rt_score <<- timeROC(T=clinicalexpr$OS.time,
                          delta=clinicalexpr$OS,   #时间 结局
@@ -141,7 +138,6 @@ pheatmap(clinical_gene_matrix,show_colnames = F,annotation_col = annotation_col,
          color = colorRampPalette(colors = c("blue","white","red"))(100),
          filename = "Fig4C.pdf")
 
-
 ####### 单变量COX #######
 
 library('survival')
@@ -151,6 +147,7 @@ clinical_expr_ucox = clinicalexpr[,c(clinicalsig,'OS','OS.time')]
 
 clinical_univ_cox=c()
 for(i in 1:length(clinicalsig)) {
+  
   res.cox= coxph(Surv(OS.time,OS)~clinical_expr_ucox[,i]  ,data=clinical_expr_ucox)
   summary(res.cox)
   
@@ -187,7 +184,7 @@ tabletext <- cbind(c("Factor",as.vector(coxhr$Factor)),
                    c("Hazard ratio",as.vector(coxhr$HR.text)))
 
 library(forestplot)
-pdf(file="clinical_expr_ucox_forest.pdf",width=9,height=5,pointsize = 20)
+png(file="clinical_expr_ucox_forest.png",width=1000,height=550,pointsize = 25)
 forestplot(tabletext,  #显示的文本
            c(NA,coxhr$median), #误差条的均值(此处为差值的中值)
            c(NA,coxhr$lower), #误差条的下界(此处为差值的25%分位数)
@@ -204,7 +201,7 @@ forestplot(tabletext,  #显示的文本
            txt_gp = fpTxtGp(ticks = gpar(cex = 1), xlab = gpar(cex = 1), cex = 1), #文本大小
            lineheight = "auto", #线的高度 
            xlab="Hazard ratio" ,#x轴的标题
-           xticks = c(0.2,1.0,5,20)
+           xticks = c(0.25,0.5,1.0,5,10,15)
 )
 dev.off()
 
@@ -248,7 +245,7 @@ tabletext <- cbind(c("Factor",as.vector(coxhr$Factor)),
                    c("Hazard ratio",as.vector(coxhr$HR.text)))
 
 library(forestplot)
-pdf(file="clinical_expr_m_forest.pdf",width=9,height=5,pointsize = 20)
+png(file="clinical_expr_m_forest.png",width=1000,height=550,pointsize = 25)
 forestplot(tabletext,  #显示的文本
            c(NA,coxhr$median), #误差条的均值(此处为差值的中值)
            c(NA,coxhr$lower), #误差条的下界(此处为差值的25%分位数)
@@ -265,8 +262,6 @@ forestplot(tabletext,  #显示的文本
            txt_gp = fpTxtGp(ticks = gpar(cex = 1), xlab = gpar(cex = 1), cex = 1), #文本大小
            lineheight = "auto", #线的高度 
            xlab="Hazard ratio" ,#x轴的标题
-           xticks = c(0.2,1.0,5,20)
+           xticks = c(0.1,1.0,10,30)
 )
 dev.off()
-
-setwd('../')

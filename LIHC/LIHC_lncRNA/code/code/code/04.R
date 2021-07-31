@@ -1,7 +1,5 @@
 rm(list = ls())
-#setwd('validation set')
-setwd('entire set')
-load(file="survexprdata_validation.Rdata")
+load(file="survexprdata_geneCoef.Rdata")
 ######### riskscore surv #######
 scoresurv = survexprdata[, geneCoef[,1] ]
 scoresurv = log2(scoresurv +1)
@@ -36,5 +34,3 @@ legend('bottomright',
          paste0('AUC at 5 years: ',round(ROC_rt$AUC[3],3))),
        col=c('red','blue','black'),lwd=4,bty = 'n')
 dev.off()
-
-setwd('../')

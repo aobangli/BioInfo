@@ -1,7 +1,6 @@
 rm(list = ls())
 options(stringsAsFactors = F)
-#setwd('validation set')
-setwd('entire set')
+setwd('./validation set')
 
 clinical= read.csv("../clinical_change.csv")
 rownames(clinical) = clinical[,1]
@@ -204,7 +203,7 @@ forestplot(tabletext,  #显示的文本
            txt_gp = fpTxtGp(ticks = gpar(cex = 1), xlab = gpar(cex = 1), cex = 1), #文本大小
            lineheight = "auto", #线的高度 
            xlab="Hazard ratio" ,#x轴的标题
-           xticks = c(0.2,1.0,5,20)
+           xticks = c(0.1,1.0,10,60)
 )
 dev.off()
 
@@ -265,7 +264,7 @@ forestplot(tabletext,  #显示的文本
            txt_gp = fpTxtGp(ticks = gpar(cex = 1), xlab = gpar(cex = 1), cex = 1), #文本大小
            lineheight = "auto", #线的高度 
            xlab="Hazard ratio" ,#x轴的标题
-           xticks = c(0.2,1.0,5,20)
+           xticks = c(0.1,1.0,10,60)
 )
 dev.off()
 

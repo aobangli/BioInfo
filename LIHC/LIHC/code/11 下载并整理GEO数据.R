@@ -2,7 +2,7 @@ rm(list=ls())
 
 ############### 1.下载GEO数据  ############
 library(GEOquery)
-eSet <- getGEO('GSE14520', destdir=".", AnnotGPL = F, getGPL = F)
+eSet <- getGEO('GSE76427', destdir=".", AnnotGPL = F, getGPL = F)
 
 b = eSet[[1]]
 c = eSet[[2]]

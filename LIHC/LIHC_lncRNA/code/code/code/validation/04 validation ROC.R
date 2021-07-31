@@ -1,6 +1,5 @@
 rm(list = ls())
-#setwd('validation set')
-setwd('entire set')
+setwd('./validation set')
 load(file="survexprdata_validation.Rdata")
 ######### riskscore surv #######
 scoresurv = survexprdata[, geneCoef[,1] ]
